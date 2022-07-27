@@ -1,9 +1,6 @@
 FROM openjdk:11
 EXPOSE 8085
-
 ADD target/fashion-api.jar fashion-api.jar
-
-
 ENTRYPOINT ["java", "-jar", "/fashion-api.jar"]
 
 #RUN apk add --no-cache bash
