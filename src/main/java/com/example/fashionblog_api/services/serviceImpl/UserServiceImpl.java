@@ -3,6 +3,7 @@ package com.example.fashionblog_api.services.serviceImpl;
 import com.example.fashionblog_api.dto.CommentsDto;
 import com.example.fashionblog_api.dto.LikesDto;
 import com.example.fashionblog_api.dto.SignUpDto;
+import com.example.fashionblog_api.exceptions.AlreadyLikesException;
 import com.example.fashionblog_api.exceptions.CommentsAlreadyExist;
 import com.example.fashionblog_api.exceptions.UserAlreadyExist;
 import com.example.fashionblog_api.exceptions.UserNotFoundException;
@@ -10,6 +11,7 @@ import com.example.fashionblog_api.models.Comments;
 import com.example.fashionblog_api.models.Likes;
 import com.example.fashionblog_api.models.Post;
 import com.example.fashionblog_api.models.User;
+import com.example.fashionblog_api.models.postPage.PostPagination;
 import com.example.fashionblog_api.repositories.CommentsRepository;
 import com.example.fashionblog_api.repositories.LikesRepository;
 import com.example.fashionblog_api.repositories.PostRepository;
@@ -17,28 +19,33 @@ import com.example.fashionblog_api.repositories.UserRepository;
 import com.example.fashionblog_api.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
-import java.util.List;
 import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
+    private  final CommentsRepository commentsRepository;
 
-    private final CommentsRepository commentsRepository;
 
     private final UserRepository userRepository;
+
 
     private final HttpSession httpSession;
 
 
     private final LikesRepository likesRepository;
 
-    private final PostRepository postRepository;
 
+    private final PostRepository postRepository;
 
 
 
@@ -92,51 +99,54 @@ public class UserServiceImpl implements UserService {
         Optional<User> user = userRepository.findUserById(ids);
         if (user.isEmpty()) {
             throw new UserNotFoundException("You Must Login First");
-        } else {
+        }
             Comments comments = new Comments();
-            Optional<Comments> id = commentsRepository.findCommentsByIdAndMessage(comments.getId(), commentsDto.getMessage());
-            if (id.isPresent()) {
+            if (commentsRepository.existsCommentsById(loginUserId())) {
                 throw new CommentsAlreadyExist("You Have Already Comments this Product!");
-            } else {
+            }
+            else {
                 BeanUtils.copyProperties(commentsDto, comments);
                 commentsRepository.save(comments);
                 return "Thank You for Your Comments";
-
             }
 
-        }
+
     }
 
     @Override
-    public String like(LikesDto likesDto) {
+    public Integer like(LikesDto likesDto) {
+    int count = 0;
     Likes likes = new Likes();
      Long likesId = loginUserId();
      Optional<User> userOptional = userRepository.findUserById(likesId);
      if(userOptional.isEmpty()){
          throw new UserNotFoundException("You Must Login First");
      }
+     if(likesRepository.existsLikesById(likesId)){
+         throw new AlreadyLikesException("You Already Likes This Product");
+     }
      else {
          BeanUtils.copyProperties(likesDto, likes);
          likesRepository.save(likes);
-         return "Thank You";
+
+         for(int  i = 0; i< likesId; i++){
+             count++;
+         }
+
      }
+         return count;
 
     }
-    @Override
-    public Post viewPost(Long id) {
-        Optional<Post> optionalPost = postRepository.findPostById(id);
-        if(optionalPost.isPresent()) {
-            return optionalPost.get();
-        }
-        else{
-            throw new UserNotFoundException("No Post Exist At the Moments");
-        }
-    }
-
 
 
     @Override
-    public List<Post> getAllPost() {
-        return postRepository.findAll();
+    public Page<Post> getAllPost(PostPagination postPagination) {
+     Sort sort = Sort.by(postPagination.getSortDirection(), postPagination.getSortBy());
+     Pageable pageable = PageRequest.of(postPagination.getPageNumber(), postPagination.getPageSize(), sort);
+     Page<Post> post = postRepository.findAll(pageable);
+        return post;
     }
+
+
+
 }

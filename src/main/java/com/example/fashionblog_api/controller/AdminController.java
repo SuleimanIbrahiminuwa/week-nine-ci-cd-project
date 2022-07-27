@@ -1,26 +1,21 @@
 package com.example.fashionblog_api.controller;
 
-import com.example.fashionblog_api.dto.*;
-import com.example.fashionblog_api.models.Admin;
-import com.example.fashionblog_api.models.Comments;
-import com.example.fashionblog_api.models.Post;
-import com.example.fashionblog_api.models.User;
+import com.example.fashionblog_api.dto.AdminDto;
+import com.example.fashionblog_api.dto.PostDto;
+import com.example.fashionblog_api.dto.UpdatePost;
 import com.example.fashionblog_api.services.AdminService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/admin")
 public class AdminController {
 
-    @Autowired
-    private AdminService adminService;
 
-
+    private final AdminService adminService;
 
 
     @PostMapping("/post")
@@ -28,7 +23,7 @@ public class AdminController {
         return new ResponseEntity<>(adminService.postProduct(postDto), HttpStatus.OK);
     }
 
-    @PostMapping("/login")
+    @PostMapping("/adminLogin")
     public ResponseEntity<?> adminLogin(@RequestBody AdminDto adminDto) {
         return new ResponseEntity<>(adminService.login(adminDto), HttpStatus.OK);
     }

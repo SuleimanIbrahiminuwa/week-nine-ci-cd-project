@@ -13,10 +13,8 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "likes")
-public class Likes {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Likes extends BaseClass{
+
     private Boolean status;
 
     @ManyToOne

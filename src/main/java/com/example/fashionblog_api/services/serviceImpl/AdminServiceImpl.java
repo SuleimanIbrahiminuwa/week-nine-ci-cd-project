@@ -3,7 +3,10 @@ package com.example.fashionblog_api.services.serviceImpl;
 import com.example.fashionblog_api.dto.AdminDto;
 import com.example.fashionblog_api.dto.PostDto;
 import com.example.fashionblog_api.dto.UpdatePost;
-import com.example.fashionblog_api.exceptions.*;
+import com.example.fashionblog_api.exceptions.AdminNotFoundException;
+import com.example.fashionblog_api.exceptions.InvalidEmailException;
+import com.example.fashionblog_api.exceptions.PostAlreadyExist;
+import com.example.fashionblog_api.exceptions.PostNotFoundExceptions;
 import com.example.fashionblog_api.models.Admin;
 import com.example.fashionblog_api.models.Comments;
 import com.example.fashionblog_api.models.Likes;
@@ -15,11 +18,11 @@ import com.example.fashionblog_api.repositories.PostRepository;
 import com.example.fashionblog_api.services.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -84,23 +87,6 @@ public class AdminServiceImpl implements AdminService {
             postRepository.save(post);
             return "Product Updated Successfully";
     }
-
-    @Override
-    public Post viewPost(Long id) {
-        Optional<Post> optionalPost = postRepository.findPostById(id);
-        if(optionalPost.isPresent()) {
-            return optionalPost.get();
-            }
-            else{
-                throw new UserNotFoundException("Post with id " + id + " not found");
-            }
-        }
-
-    @Override
-    public List<Post> getAllPost() {
-        return postRepository.findAll();
-    }
-
     @Override
     public List<Comments> getAllComments() {
         return commentsRepository.findAll();

@@ -13,11 +13,9 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "comments")
-public class Comments {
+public class Comments extends BaseClass{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+
     private String message;
 
     @ManyToOne

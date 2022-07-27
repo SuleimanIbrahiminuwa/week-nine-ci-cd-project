@@ -3,24 +3,21 @@ package com.example.fashionblog_api.controller;
 import com.example.fashionblog_api.dto.CommentsDto;
 import com.example.fashionblog_api.dto.LikesDto;
 import com.example.fashionblog_api.dto.SignUpDto;
-import com.example.fashionblog_api.exceptions.UserNotFoundException;
-import com.example.fashionblog_api.models.Comments;
-import com.example.fashionblog_api.models.Likes;
 import com.example.fashionblog_api.models.Post;
-import com.example.fashionblog_api.models.User;
-import com.example.fashionblog_api.services.AdminService;
+import com.example.fashionblog_api.models.postPage.PostPagination;
 import com.example.fashionblog_api.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
 
     @PostMapping("/signUp")
@@ -47,9 +44,10 @@ public class UserController {
     public ResponseEntity<?> comment(@RequestBody LikesDto likesDto){
         return new ResponseEntity<>(userService.like(likesDto),HttpStatus.OK);
     }
-
-    @GetMapping("/viewPost")
-    public ResponseEntity<?> viewAllPost(){
-     return new ResponseEntity<>(userService.getAllPost(), HttpStatus.OK);
+    @GetMapping("/viewPostPages")
+    public ResponseEntity<Page<Post>> getAllPost(PostPagination postPagination) {
+        return ResponseEntity.ok(userService.getAllPost(postPagination));
     }
+
+
 }

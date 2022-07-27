@@ -9,4 +9,7 @@ public class AdminDto {
 
     private String email;
     private String password;
+
+    public AdminDto(String email, String admin) {
+    }
 }

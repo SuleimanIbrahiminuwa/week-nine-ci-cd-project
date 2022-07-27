@@ -1,26 +1,20 @@
 package com.example.fashionblog_api.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
-
+@Data
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
-public class User {
+public class User extends BaseClass{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     @Size(min = 3, max = 10, message = "Username must be between 3 to 10 characters")
     private String name;
     @NotNull
@@ -41,8 +35,6 @@ public class User {
 
     @OneToMany(targetEntity = Likes.class, mappedBy = "user1")
     List<Likes> likesList;
-
-
 
 
 

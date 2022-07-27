@@ -14,12 +14,11 @@ import java.math.BigInteger;
 @AllArgsConstructor
 @Entity
 @Table(name = "post")
-public class Post {
+public class Post extends BaseClass{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+
     private String name;
+
     private String description;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
